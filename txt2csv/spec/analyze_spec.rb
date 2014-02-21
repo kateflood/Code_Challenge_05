@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'pry'
 
 # First, define methods used to create the test files.
 # We create the test files here
@@ -51,6 +52,7 @@ describe 'analyze' do
     create_test_file 'spec/testfile.txt'
     create_prefix_expected_file 'spec/expected_prefixes.txt'
     create_suffix_expected_file 'spec/expected_suffixes.txt'
+    binding.pry
   end
 
   # clean up after ourselves
@@ -66,12 +68,12 @@ describe 'analyze' do
 
   it 'reads a file and prints a hash of prefixes when given the -p option' do
 
-    `ruby lib/analyze.rb -p <spec/testfile.txt >spec/histogram.txt`
+    `ruby lib/analyze.rb -p spec/testfile.txt spec/histogram.txt`
     IO.read('spec/histogram.txt').should == IO.read('spec/expected_prefixes.txt')
   end
 
   it 'reads a file and prints a hash of suffixes when given the -s option' do
-    `ruby lib/analyze.rb -s <spec/testfile.txt >spec/histogram.txt`
+    `ruby lib/analyze.rb -s spec/testfile.txt spec/histogram.txt`
     IO.read('spec/histogram.txt').should == IO.read('spec/expected_suffixes.txt')
   end
 end
