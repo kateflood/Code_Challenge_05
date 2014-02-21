@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'pry'
+require 'analyze.rb'
 
 # First, define methods used to create the test files.
 # We create the test files here
@@ -43,7 +44,7 @@ def create_suffix_expected_file(filename)
   end
 end
 
-describe 'analyze' do
+describe Analyze do
 
   # Set up the files need for the specifications
   # put them down in the spec folder so they don't clutter the project root folder
@@ -52,7 +53,6 @@ describe 'analyze' do
     create_test_file 'spec/testfile.txt'
     create_prefix_expected_file 'spec/expected_prefixes.txt'
     create_suffix_expected_file 'spec/expected_suffixes.txt'
-    binding.pry
   end
 
   # clean up after ourselves
@@ -64,16 +64,15 @@ describe 'analyze' do
     File.delete 'spec/histogram.txt'
   end
 
-  # specify what the options and STDIN and STDOUT are supposed to do
-
-  it 'reads a file and prints a hash of prefixes when given the -p option' do
-
-    `ruby lib/analyze.rb -p spec/testfile.txt spec/histogram.txt`
-    IO.read('spec/histogram.txt').should == IO.read('spec/expected_prefixes.txt')
+  it 'should interpret the switch and return the correct pattern' do
+    return_pattern = Analyze.getType('-p')
+    expect(return_pattern).to eq (/^\S*/)
   end
 
-  it 'reads a file and prints a hash of suffixes when given the -s option' do
-    `ruby lib/analyze.rb -s spec/testfile.txt spec/histogram.txt`
+
+  it 'should read a file, generate hash of prefixes when given prefix -p and write to histogram.txt' do
+    test = Analyze.new("-p", "spec/testfile.txt", "spec/histogram.txt")
     IO.read('spec/histogram.txt').should == IO.read('spec/expected_suffixes.txt')
   end
+
 end

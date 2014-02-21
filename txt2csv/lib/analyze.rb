@@ -1,24 +1,18 @@
 require 'pry'
-
+#this class analyzes an input and outputs either a prefix or a suffix file
 class Analyze
-	attr_accessor :histogram
-	attr_accessor :pattern
-	attr_reader :switch
-	attr_reader :input
-	attr_reader :output
 
 	def initialize(switch, input, output)
 		@histogram = Hash.new(0)
-		@switch = switch
 		@input = input
 		@output = output
-		@pattern = getType
-		getNameField
+		@pattern = self.getType(switch)
+		getNameField(@input)
 	end
 	
-	def getType
+	def self.getType(switch)
 		#put error handling here for issues with option passed
-		case @switch
+		case switch
 		when '-p'
 	  		@pattern = /^\S*/
 		when '-s'
@@ -28,29 +22,30 @@ class Analyze
 		end
 	end	
 
-	def getNameField
+	def self.getNameField(input)
 		#iterate through input and remove name field
-		File.open(@input) do | file |
+		File.open(input) do | file |
 			file.each_line do | line | 
 				s = line.split('\t')
 				analyzeInput(s[0])
 			end
 		end
-		binding.pry
-		exportOutput
+		exportOutput(@output)
 	end
 
-	def analyzeInput(name_string)
+	def self.analyzeInput(name_string)
 	  	w = regular_expression.match(name_string).to_s
-	  	histogram[w.to_sym] += 1
+	  	@histogram[w.to_sym] += 1
 	end 
 
-	def exportOutput
+	def self.exportOutput(output)
 		#reverse sort the histogram and print it to the output file/source
 		histogram = Hash[ @histogram.sort_by { |word, count| count }.reverse]
-		File.open(@output) do | file |
+		File.open(output) do | file |
 			histogram.each { |word, count| puts "#{word} #{count}" }
 		end
 	end
 
 end
+
+
