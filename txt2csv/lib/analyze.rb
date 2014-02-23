@@ -6,11 +6,11 @@ class Analyze
 		@histogram = Hash.new(0)
 		@input = input
 		@output = output
-		@pattern = self.getType(switch)
-		getNameField(@input)
+		@pattern = self.get_type(switch)
+		# get_name_field(@input)
 	end
 	
-	def self.getType(switch)
+	def self.get_type(switch)
 		#put error handling here for issues with option passed
 		case switch
 		when '-p'
@@ -22,7 +22,7 @@ class Analyze
 		end
 	end	
 
-	def self.getNameField(input)
+	def self.get_name_field(input)
 		#iterate through input and remove name field
 		File.open(input) do | file |
 			file.each_line do | line | 
@@ -33,12 +33,12 @@ class Analyze
 		exportOutput(@output)
 	end
 
-	def self.analyzeInput(name_string)
+	def self.analyze_input(name_string)
 	  	w = regular_expression.match(name_string).to_s
 	  	@histogram[w.to_sym] += 1
 	end 
 
-	def self.exportOutput(output)
+	def self.export_output(output)
 		#reverse sort the histogram and print it to the output file/source
 		histogram = Hash[ @histogram.sort_by { |word, count| count }.reverse]
 		File.open(output) do | file |

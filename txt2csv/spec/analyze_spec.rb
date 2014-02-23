@@ -8,6 +8,8 @@ require 'analyze.rb'
 #   2) so the contents of the file are clear
 
 def create_test_file(filename)
+  pending
+
   File.open(filename, 'w') do |f|
     5.times  { f.puts 'Mr. Jones' }
     6.times  { f.puts 'Miss Smith' }
@@ -20,6 +22,7 @@ def create_test_file(filename)
 end
 
 def create_prefix_expected_file(filename)
+  pending
   # Note sort order - by count, not by word
   File.open(filename, 'w') do |f|
     f.puts 'Dr. 10'
@@ -33,6 +36,7 @@ def create_prefix_expected_file(filename)
 end
 
 def create_suffix_expected_file(filename)
+  pending
   File.open(filename, 'w') do |f|
     f.puts 'Roberts 10'
     f.puts 'Smith 6'
@@ -71,7 +75,7 @@ describe Analyze do
 
 
   it 'should read a file, generate hash of prefixes when given prefix -p and write to histogram.txt' do
-    test = Analyze.new("-p", "spec/testfile.txt", "spec/histogram.txt")
+    test = Analyze.new("-p", 'spec/testfile.txt', 'spec/histogram.txt')
     IO.read('spec/histogram.txt').should == IO.read('spec/expected_suffixes.txt')
   end
 

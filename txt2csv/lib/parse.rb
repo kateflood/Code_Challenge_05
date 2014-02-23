@@ -1,5 +1,34 @@
+require 'csv'
+
 # This class parses!
 class Parse
+  def initialize(input, output)
+    @@input = File.open(input, "r+")
+    @@output = File.open(output, "w+")
+  end
+
+  def self.split_input(input)
+    for @@input do |line|
+      customer = lines.split("\t")
+      @name_string = customers[0]
+      @phone_string = customers[1]
+      @twit_string = customers[2]
+      @email_string = customers[-1]
+    end
+  end
+
+  # def self.split_input(input)
+  #   attr :accessor
+  #   File.open(input).each_line do |line|
+  #     @customer = lines.split("\t")
+  #     @customer[0] = :name_string
+  #     @customer[1] = :phone_string
+  #     @customer[2] = :twit_string
+  #     @customer[-1] = :email_string
+  #   end
+  #   customers = [ @customer ]
+  # end
+
   def self.parse_names(prefixes, suffixes, name_string)
     parsed_name = { pre: '', first: '', middle: '', last: '', suffix: '' }
 
@@ -37,4 +66,6 @@ class Parse
     email = []
     email.push(email_string.match(/\S+@\S+\.\S+/) ? email_string : 'not found')
   end
+
+  Parse.new("lib/test.txt", "histogram.txt")
 end
