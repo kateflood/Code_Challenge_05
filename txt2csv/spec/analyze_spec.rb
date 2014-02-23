@@ -44,6 +44,12 @@ def create_suffix_expected_file(filename)
   end
 end
 
+def create_test_customer_file(filename)
+  File.open(filename, 'w') do |f|
+    f.puts 'Miss First Last\t(123)456-7890\t@twitter\temail@example.com'
+  end
+end
+
 describe Analyze do
 
   # Set up the files need for the specifications
@@ -53,6 +59,7 @@ describe Analyze do
     create_test_file 'spec/testfile.txt'
     create_prefix_expected_file 'spec/expected_prefixes.txt'
     create_suffix_expected_file 'spec/expected_suffixes.txt'
+    create_test_customer_file 'spec/customer_file.txt'
   end
 
   # clean up after ourselves
@@ -61,18 +68,30 @@ describe Analyze do
     File.delete 'spec/testfile.txt'
     File.delete 'spec/expected_prefixes.txt'
     File.delete 'spec/expected_suffixes.txt'
+    File.delete 'spec/customer_file.txt'
     File.delete 'spec/histogram.txt'
   end
 
   it 'should interpret the switch and return the correct pattern' do
-    return_pattern = Analyze.getType('-p')
+    return_pattern = Analyze.get_type('-p')
     expect(return_pattern).to eq (/^\S*/)
   end
 
-
-  it 'should read a file, generate hash of prefixes when given prefix -p and write to histogram.txt' do
-    test = Analyze.new("-p", "spec/testfile.txt", "spec/histogram.txt")
-    IO.read('spec/histogram.txt').should == IO.read('spec/expected_suffixes.txt')
+  it 'should read a file and return the name string' do
+    pending
+    return_string = Analyze.get_name_field('spec/customer_file.txt',  /^\S*/, {:Miss => 1})
+    expect(return_string).to eq ('Miss First Last')
   end
+
+  it 'should match a string and add/append to a histogram' do
+    return_hash = Analyze.analyze_input("Miss First Last", /^\S*/, {:Miss => 1})
+    expect(return_hash).to eq ({:Miss => 2})
+  end
+
+  it 'should write a hash to an output' do
+    return_file = Analyze.export_output("spec/histogram.txt", {:Miss => 1})
+    IO.read('spec/histogram.txt').should == "Miss 1\n"
+  end
+
 
 end
