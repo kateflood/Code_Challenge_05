@@ -6,11 +6,14 @@ class Parse
   def initialize (suffix, prefix, input, output)
     @input = input
     @output = output
-    @suffix = suffix
-    @prefix = prefix
+    @suffix_file = suffix
+    @prefix_file = prefix
   end
 
   def parse_customers
+    create_csv_file
+    create_suffix_array
+    create_prefix_array
     File.open(@input) do | file |
       file.each_line do | line | 
         str = line.split("\t")
@@ -19,7 +22,21 @@ class Parse
     end
   end
 
-  def create_array
+  def create_csv_file
+    hdr = %w(prefix first middle last suffix country_code area_code ph_prefix line extension twitter email)
+    CSV.open(@output, "w", :headers => true) do |head| 
+      head << hdr
+    end
+  end
+
+  def create_suffix_array
+    @suffix = []
+    IO.foreach(@suffix_file) { |line| @suffix << line.sub(/[^a-zA-Z]+/, '') }
+  end
+
+  def create_prefix_array
+    @prefix = []
+    IO.foreach(@prefix_file) { |line| @prefix << line.sub(/[^a-zA-Z\.]+/, '') }
   end
 
   def parse_each_line(cust_array)
@@ -29,17 +46,12 @@ class Parse
     csv_array[2] = parse_twitter(cust_array[2])
     csv_array[3] = parse_email(cust_array[3])
     export_csv(csv_array.flatten)
-
   end
 
   def export_csv(csv_array)
-    begin
-    CSV.open(@output, "a+") do |csv|
+    CSV.open(@output, "a+", :headers => true) do |csv|
       csv << csv_array
     end
-    ensure
-    end
-
   end
 
   def parse_names(prefixes, suffixes, name_string)
