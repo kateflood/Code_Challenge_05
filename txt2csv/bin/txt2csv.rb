@@ -10,18 +10,16 @@ class Txt2Csv < Thor
 	
 	desc "analyze TYPE INPUT OUTPUT", "Analyzes a file and returns either a suffix file or a prefix file"
 	
-	method_option :p, :aliases => "--prefix", :desc => "indicates prefix or suffix to analyze."  
-	method_option :i, :aliases => "--input", :desc => "the input data"
-	method_option :o, :aliases => "--output", :desc => "the output file"
+	method_option :t, :aliases => '--type', :required => true, :desc => "accepts 'p' or 's' to indicate prefix or suffix file."
+	method_option :i, :aliases => '--input', :required => true, :desc => "the input data"
+	method_option :o, :aliases => '--output', :required => true, :desc => "the output file"
 
 	def analyze
-	
-		test = Analyze.new(options[:p], options[:i], options[:o])
-		binding.pry
-		test.get_type(test.switch)
-		test.get_name_field(test.input, test.pattern, test.histogram)
-		test.export_output(test.output, test.histogram)
-
+		#begin
+			Analyze.new(options[:t], options[:i], options[:o]).get_name_field
+		# rescue
+		# 	puts "Analyze class not instantiated. Check your arguments."
+		# end
 	end
 
 	#this will use the edited prefix and suffix files to convert the incoming file into clean csv

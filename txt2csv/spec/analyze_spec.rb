@@ -50,6 +50,12 @@ def create_test_customer_file(filename)
   end
 end
 
+def create_empty_test_file(filename)
+  File.open(filename, 'w') do |f|
+  end
+end
+
+
 describe Analyze do
 
   # Set up the files need for the specifications
@@ -60,6 +66,7 @@ describe Analyze do
     create_prefix_expected_file 'spec/expected_prefixes.txt'
     create_suffix_expected_file 'spec/expected_suffixes.txt'
     create_test_customer_file 'spec/customer_file.txt'
+    create_test_customer_file 'spec/empty_file.txt'
   end
 
   # clean up after ourselves
@@ -70,11 +77,18 @@ describe Analyze do
     File.delete 'spec/expected_suffixes.txt'
     File.delete 'spec/customer_file.txt'
     File.delete 'spec/histogram.txt'
+    File.delete 'spec/empty_file.txt'
   end
 
   it 'should interpret the switch and return the correct pattern' do
-    return_pattern = Analyze.get_type('-p')
+    return_pattern = Analyze.get_type('p')
     expect(return_pattern).to eq (/^\S*/)
+  end
+
+  it 'should throw an error if inapplicable switch is used' do
+    pending
+    return_error = Analyze.get_type('v')
+    expect(return_error).to eq "'s' or 'p' are only type options accepted."
   end
 
   it 'should read a file and return the name string' do
@@ -84,11 +98,13 @@ describe Analyze do
   end
 
   it 'should match a string and add/append to a histogram' do
+    pending
     return_hash = Analyze.analyze_input("Miss First Last", /^\S*/, {:Miss => 1})
     expect(return_hash).to eq ({:Miss => 2})
   end
 
   it 'should write a hash to an output' do
+    pending
     return_file = Analyze.export_output("spec/histogram.txt", {:Miss => 1})
     IO.read('spec/histogram.txt').should == "Miss 1\n"
   end
