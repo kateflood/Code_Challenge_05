@@ -1,31 +1,33 @@
 require 'csv'
+require 'pry'
 
 # This class parses!
 class Parse
   def initialize(input, output)
-    @@input = File.open(input, "r+")
-    @@output = File.open(output, "w+")
+    @input = File.open(input, "r+")
+    @output = File.open(output, "w+")
+
   end
 
   def self.split_input(input)
-    for @@input do |line|
-      customer = lines.split("\t")
-      @name_string = customers[0]
-      @phone_string = customers[1]
-      @twit_string = customers[2]
-      @email_string = customers[-1]
+    f = File.open(input, "r+")
+    # binding.pry
+    f.each_line do |line|
+      @customer = line.chomp
+      @customer = @customer.split("\t")
     end
+    @customer
   end
 
-  # def self.split_input(input)
-  #   attr :accessor
-  #   File.open(input).each_line do |line|
-  #     @customer = lines.split("\t")
-  #     @customer[0] = :name_string
-  #     @customer[1] = :phone_string
-  #     @customer[2] = :twit_string
-  #     @customer[-1] = :email_string
-  #   end
+  def self.parse_lines(@customer)
+
+
+
+
+  #   parsed_file[:name_string] = @customer.each[0]
+  #   parsed_file[:phone_string] = @customer.each[1]
+  #   parsed_file[:twit_string] = @customer.each[2]
+  #   parsed_file[:name_string] = @customer.each[-1]
   #   customers = [ @customer ]
   # end
 
@@ -66,6 +68,4 @@ class Parse
     email = []
     email.push(email_string.match(/\S+@\S+\.\S+/) ? email_string : 'not found')
   end
-
-  Parse.new("lib/test.txt", "histogram.txt")
 end
