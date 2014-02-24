@@ -9,21 +9,37 @@ class Parse
 
   end
 
+  def parse_all(input)
+    Parse.split_input(@input)
+    @parsed = Parse.parse_lines(@customer)
+    print @parsed
+  end
+
   def self.split_input(input)
     f = File.open(input, "r+")
     # binding.pry
     f.each_line do |line|
-      @customer = line.chomp
-      @customer = @customer.split("\t")
+      @customer = line
+      @customer = @customer.chomp.split("\t")
     end
     @customer
   end
 
-  def self.parse_lines(@customer)
+  def self.parse_lines(customer)
+    customer = @customer
+    prefixes = %w(M. Mrs. Mr. Dr. Ms. Sister Lady)
+    suffixes = %w(Jr. Sr. II III IV PhD.)
 
+    customer_info = @customer.to_a
+    binding.pry
+    names = Parse.parse_names(prefixes, suffixes, customer_info[0])
+    binding.pry
+    phone = Parse.parse_phone(customer_info[1])
+    twitter = Parse.parse_twitter(customer_info[2])
+    email = Parse.parse_email(customer_info[-1])
 
-
-
+    parsed_customer = [names, phone, twitter, email]
+  end
   #   parsed_file[:name_string] = @customer.each[0]
   #   parsed_file[:phone_string] = @customer.each[1]
   #   parsed_file[:twit_string] = @customer.each[2]
@@ -32,6 +48,8 @@ class Parse
   # end
 
   def self.parse_names(prefixes, suffixes, name_string)
+    prefixes = %w(M. Mrs. Mr. Dr. Ms. Sister Lady)
+    suffixes = %w(Jr. Sr. II III IV PhD.)
     parsed_name = { pre: '', first: '', middle: '', last: '', suffix: '' }
 
     word = name_string.split
