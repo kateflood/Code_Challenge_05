@@ -1,13 +1,17 @@
 require 'pry'
+require_relative 'prefixfile.txt'
+require_relative 'suffixfile.txt'
 #this class analyzes an input and outputs either a prefix or a suffix file
 class Analyze
 
-	def initialize(switch, input, output)
+	def initialize(input, output)
 		@histogram = Hash.new(0)
+		@prefixes = File.open('prefixfile.txt')
+		@suffixes = File.open('suffixfile.txt')
 		@input = input
 		@output = output
 		@pattern = self.get_type(switch)
-		# get_name_field(@input)
+		self.get_name_field(@input)
 	end
 	
 	def self.get_type(switch)
@@ -27,10 +31,10 @@ class Analyze
 		File.open(input) do | file |
 			file.each_line do | line | 
 				s = line.split('\t')
-				analyzeInput(s[0])
+				self.analyze_input(s[0])
 			end
 		end
-		exportOutput(@output)
+		self.export_output(@output)
 	end
 
 	def self.analyze_input(name_string)
@@ -47,5 +51,3 @@ class Analyze
 	end
 
 end
-
-
