@@ -3,60 +3,56 @@ require 'pry'
 
 # This class parses!
 class Parse
-  def initialize(prefixfile, suffixfile)
+  def initialize(prefixfile, suffixfile, input, output)
     # binding.pry
+    @customers = (File.open(input, 'r+')).read
+    @output = output
     p = File.open(prefixfile, 'r+')
-    @prefixes = [(p.read).split("\s")].flatten!
+    @prefixes = [(p.read).split("\s")]
     # binding.pry
     s = File.open(suffixfile, 'r+')
-    @suffixes = [(s.read).split("\s")].flatten!
+    @suffixes = [(s.read).split("\s")]
     # binding.pry
+    @customers.each_line do |line|
+      @customer = line.split("\t")
+      parse_all(@customer)
+      convert(@output)
+    end
   end
 
   def parse_all(customer)
+    pull_names(@customer)
+    pull_phone(@customer)
+    pull_twitter(@customer)
+    pull_email(@customer)
     # binding.pry
-    @parsed_input = [] << @name << @phone << @twitter << @email
+    @parsed_input = @name << @phone << @twitter << @email
     # binding.pry
     @parsed_input
   end
 
-  def split_input(input)
-    f = File.open(input, 'r+')
-    @customer = f.read
-    # binding.pry
-    @customer = @customer.split("\n")
-    # binding.pry
-    @customer.map! { |x| x.split("\t") }
-    @customer
-    # binding.pry
-  end
-
   def pull_names(customer)
-    @name_string = @customer.map { |x| x[0] }
-    @name_string.map! { |x| x.split("\s") }
+    @name_string = @customer[0]
+    @name_string.split("\t")
     parse_names(@prefixes, @suffixes, @name_string)
     # binding.pry
   end
 
   def parse_names(prefixes, suffixes, name_string)
-    parsed_name = { pre: [], first: [], middle: [], last: [], suffix: [] }
-    # prefixes = nil ? prefixes = '' : prefixes
-    # suffixes = nil ? suffixes = '' : suffixes
-    
-    name_string.each do |subarray|
-      parsed_name[:suffix] << subarray[-1] if suffixes.include? subarray.last
-      parsed_name[:last] << subarray[-1]
-      parsed_name[:pre] << subarray[0] if prefixes.include? subarray[0]
-      binding.pry
-      parsed_name[:first] << subarray.shift if subarray.count > 1
-      parsed_name[:middle] << subarray.first if subarray.count > 1
-    end
+    parsed_name = { pre: '', first: '', middle: '', last: '', suffix: '' }
+
+    word = name_string.split
+    parsed_name[:suffix] = word.pop if suffixes.include? word.last
+    parsed_name[:last] = word.last
+    parsed_name[:pre] = word.shift if prefixes.include? word.first
+    parsed_name[:first] = word.shift if word.count > 1
+    parsed_name[:middle] = word.first if word.count > 1
 
     @name = parsed_name.values
   end
 
   def pull_phone(customer)
-    @phone_string = @customer.map { |x| x[1] }
+    @phone_string = @customer[1]
     parse_phone(@phone_string)
     # binding.pry
   end
@@ -76,36 +72,33 @@ class Parse
   end
 
   def pull_twitter(customer)
-    @twit_string = @customer.map { |x| x[2] }
+    @twit_string = @customer[2]
     parse_twitter(@twit_string)
     # binding.pry
   end
 
-  def self.parse_twitter(twit_string)
-    @twitter = []
-    @twitter << twit_string.gsub(/@/, '')
+  def parse_twitter(twit_string)
+    twitter = []
+    twitter << twit_string.gsub(/@/, '')
   end
 
   def pull_email(customer)
-    @email_string = @customer.map { |x| x[-1] }
+    @email_string = @customer[-1]
     parse_email(@email_string)
     # binding.pry
   end
 
   def parse_email(email_string)
-    @email = []
-    @email.push(email_string.match(/\S+@\S+\.\S+/) ? email_string : 'not found')
+    email = []
+    email.push(email_string.match(/\S+@\S+\.\S+/) ? email_string : 'not found')
   end
 
-  def convert(input, output)
-    # binding.pry
-    split_input(input)
-    parse_all(@customer)
+  def convert(output)
     # binding.pry
     CSV.open(output, 'a+') do |csv|
-      csv << @parsed_input.each
+      csv << @parsed_input
     end
   end
-
-  Parse.new('lib/prefixfile.txt', 'lib/suffixfile.txt').convert('lib/test.txt', 'lib/namefile.csv')
 end
+
+Parse.new('lib/prefixfile.txt', 'lib/suffixfile.txt', 'lib/test.txt', 'lib/namefile.csv')
