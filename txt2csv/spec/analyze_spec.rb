@@ -7,19 +7,18 @@ require 'analyze.rb'
 #   1) so that the test can be run on its own and
 #   2) so the contents of the file are clear
 
-def create_test_file(filename)
+def create_test_customer_file(filename)
   File.open(filename, 'w') do |f|
-    5.times  { f.puts 'Mr. Jones' }
-    6.times  { f.puts 'Miss Smith' }
-    4.times  { f.puts 'Mrs. Wesson' }
-    10.times { f.puts 'Dr. Roberts' }
-    1.times  { f.puts 'Jane Wintermute' }
-    2.times  { f.puts 'Frank Franklin' }
-    3.times  { f.puts 'Darleen Washington' }
+    f.puts 'Mrs. Theresa E. Stamm 1-678-523-6736  Reinger kieran@runte.biz'
+    f.puts 'Keara Maggio  1-399-471-4388 x9581  @Weber  cayla@lubowitz.com'
+    f.puts 'Daren S. Padberg DVM  240-399-5583 x73790 Hessel  augusta@stoltenberg.com'
+    f.puts 'Claud Auer  (561)024-9548 x165  @Mraz jettie_friesen@weber.com'
+    f.puts 'Mrs. Sam Parisian 818-657-9309 x5633  @Quigley  lavon.quitzon@schinnercain.biz'
+    f.puts 'Ciara X. Windler II 575-225-1469 x240 Labadie ryan_moore@hagenesmiller.com'
   end
 end
 
-def create_prefix_expected_file(filename)
+def create_prefix_file(filename)
   # Note sort order - by count, not by word
   File.open(filename, 'w') do |f|
     f.puts 'Dr. 10'
@@ -32,7 +31,7 @@ def create_prefix_expected_file(filename)
   end
 end
 
-def create_suffix_expected_file(filename)
+def create_suffix_file(filename)
   File.open(filename, 'w') do |f|
     f.puts 'Roberts 10'
     f.puts 'Smith 6'
@@ -44,17 +43,6 @@ def create_suffix_expected_file(filename)
   end
 end
 
-def create_test_customer_file(filename)
-  File.open(filename, 'w') do |f|
-    f.puts 'Miss First Last\t(123)456-7890\t@twitter\temail@example.com'
-  end
-end
-
-def create_empty_test_file(filename)
-  File.open(filename, 'w') do |f|
-  end
-end
-
 
 describe Analyze do
 
@@ -62,52 +50,51 @@ describe Analyze do
   # put them down in the spec folder so they don't clutter the project root folder
 
   before(:all) do
-    create_test_file 'spec/testfile.txt'
-    create_prefix_expected_file 'spec/expected_prefixes.txt'
-    create_suffix_expected_file 'spec/expected_suffixes.txt'
-    create_test_customer_file 'spec/customer_file.txt'
-    create_test_customer_file 'spec/empty_file.txt'
+    create_test_customer_file 'spec/test_customer_file.txt'
+    create_test_prefix_file 'spec/test_prefix_file.txt'
+    create_test_suffix_file 'spec/test_suffix_file.txt'
   end
 
   # clean up after ourselves
 
   after(:all) do
-    File.delete 'spec/testfile.txt'
-    File.delete 'spec/expected_prefixes.txt'
-    File.delete 'spec/expected_suffixes.txt'
-    File.delete 'spec/customer_file.txt'
-    File.delete 'spec/histogram.txt'
-    File.delete 'spec/empty_file.txt'
+    File.delete 'spec/test_customer_file.txt'
+    File.delete 'spec/test_prefix_file.txt'
+    File.delete 'spec/test_suffix_file.txt'
   end
 
-  it 'should interpret the switch and return the correct pattern' do
-    return_pattern = Analyze.get_type('p')
-    expect(return_pattern).to eq (/^\S*/)
+  it 'should take a flag, input file and output file with extracted prefix or suffix' do
+    `ruby lib/analyze.rb -t p -i test_customer_file.txt test_prefix_file.txt`
+    IO.read('spec/histogram.txt').should == IO.read('spec/expected_prefixes.txt')
   end
 
-  it 'should throw an error if inapplicable switch is used' do
-    pending
-    return_error = Analyze.get_type('v')
-    expect(return_error).to eq "'s' or 'p' are only type options accepted."
-  end
+  # it 'should interpret the switch and return the correct pattern' do
+  #   return_pattern = @mock_analyze.get_type('p')
+  #   expect(return_pattern).to eq (/^\S*/)
+  # end
 
-  it 'should read a file and return the name string' do
-    pending
-    return_string = Analyze.get_name_field('spec/customer_file.txt',  /^\S*/, {:Miss => 1})
-    expect(return_string).to eq ('Miss First Last')
-  end
+  # it 'should throw an error if inapplicable switch is used' do
+  #   pending
+  #   return_pattern = @mock_analyze.get_type('v')
+  #   expect(return_error).to eq "Unknown type error."
+  # end
 
-  it 'should match a string and add/append to a histogram' do
-    pending
-    return_hash = Analyze.analyze_input("Miss First Last", /^\S*/, {:Miss => 1})
-    expect(return_hash).to eq ({:Miss => 2})
-  end
+  # it 'should read a file and return the name string' do
+  #   pending
+  #   return_string = @mock_analyze.parse_name_field.with("customer_file.txt")
+  #   expect(return_string).to eq ('Miss First Last')
+  # end
 
-  it 'should write a hash to an output' do
-    pending
-    return_file = Analyze.export_output("spec/histogram.txt", {:Miss => 1})
-    IO.read('spec/histogram.txt').should == "Miss 1\n"
-  end
+  # it 'should match a string and add/append to a histogram' do
+  #   return_hash = @mock_analyze.analyze_input("Miss First Last", /^\S*/)
+  #   expect(return_hash).to eq ({ :Miss => 1 })
+  # end
+
+  # it 'should write a hash to an output' do
+  #   pending
+  #   return_file = @mock_analyze.export_output
+  #   IO.read('spec/histogram.txt').should == "Miss 1\n"
+  # end
 
 
 end

@@ -2,8 +2,7 @@ require 'pry'
 require 'csv'
 # This class parses!
 class Parse
-  
-  def initialize (suffix, prefix, input, output)
+  def initialize(suffix, prefix, input, output)
     @input = input
     @output = output
     @suffix_file = suffix
@@ -11,21 +10,18 @@ class Parse
   end
 
   def parse_customers
-    create_csv_file
     create_suffix_array
     create_prefix_array
-    File.open(@input) do | file |
-      file.each_line do | line | 
-        str = line.split("\t")
-        parse_each_line(str)
-      end
-    end
-  end
-
-  def create_csv_file
     hdr = %w(prefix first middle last suffix country_code area_code ph_prefix line extension twitter email)
-    CSV.open(@output, "w", :headers => true) do |head| 
-      head << hdr
+    csv_file = CSV.open(@output, 'a+', :headers => true) do | csv |
+      csv << hdr # add headers to csv file
+      File.open(@input) do | file |
+        file.each_line do | line |
+          str = line.split("\t")
+          line_array = parse_each_line(str)
+          csv << line_array.flatten
+        end
+      end
     end
   end
 
@@ -45,13 +41,7 @@ class Parse
     csv_array[1] = parse_phone(cust_array[1])
     csv_array[2] = parse_twitter(cust_array[2])
     csv_array[3] = parse_email(cust_array[3])
-    export_csv(csv_array.flatten)
-  end
-
-  def export_csv(csv_array)
-    CSV.open(@output, "a+", :headers => true) do |csv|
-      csv << csv_array
-    end
+    csv_array
   end
 
   def parse_names(prefixes, suffixes, name_string)
@@ -83,7 +73,6 @@ class Parse
 
   def parse_twitter(twit_string)
     twitter = []
-
     twitter << twit_string.gsub(/@/, '')
   end
 
@@ -91,5 +80,4 @@ class Parse
     email = []
     email.push(email_string.match(/\S+@\S+\.\S+/) ? email_string.chomp : 'not found')
   end
-
 end
