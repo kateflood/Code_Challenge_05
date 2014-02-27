@@ -7,6 +7,7 @@ class Parse
     @output = output
     @suffix_file = suffix
     @prefix_file = prefix
+    parse_customers
   end
 
   def parse_customers
@@ -19,6 +20,7 @@ class Parse
         file.each_line do | line |
           str = line.split("\t")
           line_array = parse_each_line(str)
+          binding.pry
           csv << line_array.flatten
         end
       end

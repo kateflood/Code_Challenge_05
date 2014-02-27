@@ -6,6 +6,7 @@ class Analyze
     @input = input
     @output = output
     @switch = switch
+    parse_name_field
   end
 
   def get_type(switch)
@@ -16,7 +17,7 @@ class Analyze
     when 's'
       /\S*$/
     else
-      raise "Unknown type error."
+      # raise "Unknown type error."
     end
   end
 

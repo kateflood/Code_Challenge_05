@@ -24,7 +24,7 @@ class Txt2Csv < Thor
   method_option :o, :aliases => '--output', :required => true, :desc => 'the output file'
 
   def analyze
-    Analyze.new(options[:t], options[:i], options[:o]).parse_name_field
+    Analyze.new(options[:t], options[:i], options[:o])
   end
 
   # this will use the edited prefix and suffix files to convert the incoming file into clean csv
@@ -48,7 +48,7 @@ class Txt2Csv < Thor
   method_option :o, :aliases => '--output', :required => true, :desc => 'the output file'
 
   def convert
-    Parse.new(options[:s], options[:p], options[:i], options[:o]).parse_customers
+    Parse.new(options[:s], options[:p], options[:i], options[:o])
   end
   # rubocop:enable LineLength, HashSyntax
 end
