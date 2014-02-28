@@ -23,7 +23,7 @@ class Analyze
 
   def parse_name_field
     reg_exp = get_type(@switch)
-    f = File.open(@input) do | file |
+    File.open(@input) do | file |
       file.each_line do | line |
         s = line.split("\t")
         analyze_input(s[0], reg_exp)
@@ -41,7 +41,7 @@ class Analyze
 
   def export_output
     h = Hash[ @histogram.sort_by { |word, count| count }.reverse]
-    f = File.open(@output, 'w') do | file |
+    File.open(@output, 'w') do | file |
       h.each { |word, count| file.puts "#{word} #{count}" }
     end
   end

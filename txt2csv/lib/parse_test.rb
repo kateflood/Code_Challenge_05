@@ -7,20 +7,18 @@ class Parse
     @output = output
     @suffix_file = suffix
     @prefix_file = prefix
+    create_suffix_array
+    create_prefix_array
     parse_customers
   end
 
   def parse_customers
-    create_suffix_array
-    create_prefix_array
-    hdr = %w(prefix first middle last suffix country_code area_code ph_prefix line extension twitter email)
-    csv_file = CSV.open(@output, 'a+', :headers => true) do | csv |
-      csv << hdr # add headers to csv file
+    CSV.open(@output, 'a+', :headers => true) do | csv | # rubocop:disable HashSyntax
+      csv << %w(prefix first middle last suffix country_code area_code ph_prefix line extension twitter email)
       File.open(@input) do | file |
         file.each_line do | line |
           str = line.split("\t")
           line_array = parse_each_line(str)
-          binding.pry
           csv << line_array.flatten
         end
       end
